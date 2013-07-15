@@ -3,6 +3,9 @@
 require 'sonos'
 
 $system = Sonos::System.new
+$previous = {}
+$current = {}
+$target = {}
 
 def zone_menu
   i=1
@@ -49,9 +52,25 @@ def execute_command(command, zone_id)
   end
 end
 
+def convert_timestamp_to_seconds(timestamp)
+	ary = timestamp.split(":")
+	val = ary[0].to_i * 3600 + ary[1].to_i * 60 + ary[2].to_i
+end
+
 while true do
-  zone_menu
-  zone_id = select_zone
-  print "What do you want to do? "
-  execute_command(gets.chomp, zone_id)
+  $system.speakers.each do |zone|
+	  $current[zone.name] = zone.now_playing[:current_position] unless zone.now_playing.nil?
+  end
+  $previous.each do |k,v|
+	  unless $current[k].nil?
+	  	prev = convert_timestamp_to_seconds($previous[k])
+	  	curr = convert_timestamp_to_seconds($current[k])
+	  	$target[k] = v if (prev < curr)
+	    #$target[k] = v if $previous[k].to_i < $current[k].to_i
+	  end
+  end
+  puts $previous, $current,$target
+  $previous = $current.dup
+  $current = {}
+  sleep 1
 end
