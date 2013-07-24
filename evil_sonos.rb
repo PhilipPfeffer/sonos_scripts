@@ -42,6 +42,10 @@ def execute_command(command, zone_id)
     $system.speakers[zone_id.to_i].volume += 10	
   when "down"
     $system.speakers[zone_id.to_i].volume -= 10	
+  #when "party" , "party on" , "all speakers"
+    #system.party_mode
+  #when "party off" , "all speakers"
+    #system.party_over  
   when "set"
   	print "What volume level? "
 	$system.speakers[zone_id.to_i].volume = gets.chomp	
